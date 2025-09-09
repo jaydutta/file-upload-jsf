@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+
+<h:head>
+    <title>File Upload Application</title>
+    <h:outputStylesheet library="css" name="style.css"/>
+</h:head>
+
+<h:body>
+    <div class="container">
+        <h1>File Upload Application</h1>
+        
+        <!-- Messages -->
+        <h:messages globalOnly="true" showDetail="true" showSummary="false" 
+                   styleClass="messages" infoClass="info" warnClass="warn" errorClass="error"/>
+        
+        <!-- Upload Form -->
+        <h:form enctype="multipart/form-data" styleClass="upload-form">
+            <h2>Upload New File</h2>
+            
+            <div class="form-group">
+                <h:outputLabel for="category" value="Category:" styleClass="label"/>
+                <h:selectOneMenu id="category" value="#{fileUploadBean.selectedCategory}" 
+                                styleClass="dropdown" required="true"
+                                requiredMessage="Please select a category">
+                    <f:selectItem itemLabel="Select Category..." itemValue="" noSelectionOption="true"/>
+                    <f:selectItems value="#{fileUploadBean.categories}" var="cat" 
+                                  itemLabel="#{cat}" itemValue="#{cat}"/>
+                </h:selectOneMenu>
+                <h:message for="category" styleClass="error-message"/>
+            </div>
+            
+            <div class="form-group">
+                <h:outputLabel for="file" value="Choose File:" styleClass="label"/>
+                <h:inputFile id="file" value="#{fileUploadBean.uploadedFile}" 
+                            styleClass="file-input" required="true"
+                            requiredMessage="Please select a file to upload"/>
+                <h:message for="file" styleClass="error-message"/>
+            </div>
+            
+            <div class="form-actions">
+                <h:commandButton value="Upload" action="#{fileUploadBean.upload}" 
+                               styleClass="btn btn-primary"/>
+                <h:commandButton value="Save All" action="#{fileUploadBean.save}" 
+                               styleClass="btn btn-success"/>
+            </div>
+        </h:form>
+        
+        <!-- Uploaded Files List -->
+        <div class="files-section">
+            <h2>Uploaded Files</h2>
+            <h:form rendered="#{not empty fileUploadBean.uploadedFiles}">
+                <h:dataTable value="#{fileUploadBean.uploadedFiles}" var="file" 
+                           styleClass="files-table" headerClass="table-header" 
+                           rowClasses="table-row-odd,table-row-even">
+                    
+                    <h:column>
+                        <f:facet name="header">File Name</f:facet>
+                        <h:outputText value="#{file.name}"/>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Type</f:facet>
+                        <h:outputText value="#{file.type}"/>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Size</f:facet>
+                        <h:outputText value="#{file.formattedSize}"/>
+                    </h:column>
+                    
+                    <h:column>
+                        <f:facet name="header">Actions</f:facet>
+                        <h:commandButton value="Delete" 
+                                       action="#{fileUploadBean.deleteFile(file)}"
+                                       styleClass="btn btn-danger btn-small"
+                                       onclick="return confirm('Are you sure you want to delete this file?')"/>
+                    </h:column>
+                </h:dataTable>
+            </h:form>
+            
+            <div rendered="#{empty fileUploadBean.uploadedFiles}" class="no-files">
+                <p>No files uploaded yet.</p>
+            </div>
+        </div>
+    </div>
+</h:body>
+</html>
